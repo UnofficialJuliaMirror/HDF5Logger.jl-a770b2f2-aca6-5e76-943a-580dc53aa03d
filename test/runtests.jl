@@ -20,14 +20,14 @@ try
     log!(log, "/vector", c * vector_data)
 
     # Test a matrix
-    add!(log, "/matrix", matrix_data, num_samples)
-    log!(log, "/matrix", matrix_data)
-    log!(log, "/matrix", c * matrix_data)
+    add!(log, "/group/matrix", matrix_data, num_samples)
+    log!(log, "/group/matrix", matrix_data)
+    log!(log, "/group/matrix", c * matrix_data)
 
     # Test a scalar
-    add!(log, "/scalar", scalar_data, num_samples)
-    log!(log, "/scalar", scalar_data)
-    log!(log, "/scalar", c * scalar_data)
+    add!(log, "/group/scalar", scalar_data, num_samples)
+    log!(log, "/group/scalar", scalar_data)
+    log!(log, "/group/scalar", c * scalar_data)
 
 catch err
     close!(log)
@@ -42,8 +42,8 @@ close!(log)
 h5open(file_name, "r") do file
 
     vector_result = read(file, "/vector")
-    matrix_result = read(file, "/matrix")
-    scalar_result = read(file, "/scalar")
+    matrix_result = read(file, "/group/matrix")
+    scalar_result = read(file, "/group/scalar")
 
     @test(vector_result[:,1]   == vector_data)
     @test(matrix_result[:,:,1] == matrix_data)
