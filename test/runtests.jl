@@ -20,8 +20,8 @@ try
     log!(log, "/vector", c * vector_data)
 
     # Test a matrix
-    add!(log, "/group/matrix", matrix_data, num_samples)
-    log!(log, "/group/matrix", matrix_data)
+    add!(log, "/group/matrix", matrix_data, num_samples, true) # Keep data.
+    # log!(log, "/group/matrix", matrix_data) # First sample is kept this time!
     log!(log, "/group/matrix", c * matrix_data)
 
     # Test a scalar

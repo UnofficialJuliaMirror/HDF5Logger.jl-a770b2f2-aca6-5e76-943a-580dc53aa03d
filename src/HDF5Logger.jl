@@ -34,7 +34,7 @@ struct Log
     streams::Dict{String,Stream}
     file_id::HDF5File
     function Log(file_name::String)
-        new(Dict{String,Stream}(), h5open(file_name, "w"));
+        new(Dict{String,Stream}(), h5open(file_name, "w"))
     end
 end
 
@@ -53,13 +53,16 @@ function prepare_group!(log::Log, slug::String)
     return (group_id, String(groups[end])) # Group ID and name of dataset
 end
 
-function add!(log::Log, group_name::String, data, num_samples::Int64)
-    dims = isbits(data) ? 1 : size(data)
-    group_id, group_name    = prepare_group!(log, group_name);
+function add!(log::Log, slug::String, data, num_samples::Int64, keep::Bool = false)
+    dims                    = isbits(data) ? 1 : size(data)
+    group_id, group_name    = prepare_group!(log, slug)
     dataset_id              = d_create(group_id, group_name,
                                        datatype(eltype(data)),
-                                       dataspace(dims..., num_samples));
+                                       dataspace(dims..., num_samples))
     log.streams[group_name] = Stream(0, num_samples, length(dims), dataset_id)
+    if keep
+        log!(log, slug, data)
+    end
 end
 
 function log!(log::Log, slug::String, data)
@@ -67,9 +70,9 @@ function log!(log::Log, slug::String, data)
             "The logger doesn't have that key. Perhaps you need to `add` it?")
     @assert(log.streams[slug].count < log.streams[slug].length,
             "We've already used up all of the allocated space for this stream!")
-    log.streams[slug].count += 1;
+    log.streams[slug].count += 1
     index = (repeat([:], outer=log.streams[slug].rank)...,
-             log.streams[slug].count); # TODO: Is there a better way to do this?
+             log.streams[slug].count) # TODO: Is there a better way to do this?
     log.streams[slug].dataset[index...] = data
 end
 
