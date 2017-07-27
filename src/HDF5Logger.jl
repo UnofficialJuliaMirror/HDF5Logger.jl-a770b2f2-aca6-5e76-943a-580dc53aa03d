@@ -77,14 +77,13 @@ struct Log
 end
 
 function prepare_group!(log::Log, slug::String)
-    groups = filter(x->!isempty(x), split(slug)) # Explode to group names
+    groups = filter(x->!isempty(x), split(slug, '/')) # Explode to group names
+    display(groups)
     group_id = g_open(log.file_id, "/") # Start at top group
     for k = 1:length(groups)-1 # For each group up to dataset
-        if exists(group_id, groups[k])
-            println("Group '$(groups[k]))' already exists.")
+        if exists(group_id, String(groups[k]))
             group_id = g_open(group_id, String(groups[k]))
         else
-            println("Creating group '$(groups[k]))'.")
             group_id = g_create(group_id, String(groups[k]))
         end
     end
@@ -97,7 +96,6 @@ function add!(log::Log, slug::String, data, num_samples::Int64, keep::Bool = fal
     dataset_id              = d_create(group_id, group_name,
                                        datatype(eltype(data)),
                                        dataspace(dims..., num_samples))
-    log.streams[group_name] = Stream(0, num_samples, length(dims), dataset_id)
     if keep
         log!(log, slug, data)
     end
