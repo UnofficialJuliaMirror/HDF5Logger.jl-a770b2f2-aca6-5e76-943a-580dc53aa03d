@@ -107,9 +107,8 @@ function log!(log::Log, slug::String, data)
     @assert(log.streams[slug].count < log.streams[slug].length,
             "We've already used up all of the allocated space for this stream!")
     log.streams[slug].count += 1
-    index = (repeat([:], outer=log.streams[slug].rank)...,
-             log.streams[slug].count) # TODO: Is there a better way to do this?
-    log.streams[slug].dataset[index...] = data
+    colons = (Colon() for i in 1:log.streams[slug].rank)
+    log.streams[slug].dataset[colons..., log.streams[slug].count] = data
 end
 
 function close!(log::Log)
