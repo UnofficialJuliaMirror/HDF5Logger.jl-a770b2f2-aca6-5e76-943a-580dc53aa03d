@@ -1,11 +1,11 @@
 using HDF5Logger
-using Base.Test
+using Test
 using HDF5 # For reading in wholesale time histories
 
 # Set up some data to work with.
 num_samples = 5
 vector_data = [1., 2., 3.]
-matrix_data = [1 2 3; 4 5 6].'
+matrix_data = transpose([1 2 3; 4 5 6])
 scalar_data = 1.
 c           = 2
 
